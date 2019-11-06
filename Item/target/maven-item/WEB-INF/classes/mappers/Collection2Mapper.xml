@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vip.items.mapper.Collection2Mapper">
+
+    <insert id="save">
+        INSERT into collection2(uid,pid) VALUES (#{uid},#{pid})
+    </insert>
+    <delete id="delete">
+        UPDATE collection2 SET is_delete=1 WHERE pid=#{pid} and uid=#{uid}
+    </delete>
+    <select id="findProgrammers" resultMap="com.vip.items.mapper.ProgrammerMapper.findSixProgrammer">
+        SELECT p.pid,p.pimage,p.pname,p.adept,p.income,p.finish,p.moods,p.grade,p.location
+        FROM programmer p
+        WHERE p.is_delete=0 and p.pid IN (SELECT c2.pid FROM collection2 c2 WHERE c2.is_delete=0 AND c2.uid=#{uid})
+    </select>
+</mapper>

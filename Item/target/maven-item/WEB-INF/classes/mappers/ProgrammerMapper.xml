@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vip.items.mapper.ProgrammerMapper">
+    <resultMap id="findSixProgrammer" type="Programmer">
+        <id property="pid" column="pid"/>
+        <result property="adept" column="adept"/>
+        <result property="finish" column="finish"/>
+        <result property="grade" column="grade"/>
+        <result property="income" column="income"/>
+        <result property="pimage" column="pimage"/>
+        <result property="pname" column="pname"/>
+        <result property="moods" column="moods"/>
+    </resultMap>
+
+    <select id="findSixProgrammers" resultMap="findSixProgrammer">
+        SELECT p.pid,p.pimage,p.pname,p.adept,p.income,p.finish,p.moods,p.grade,p.location
+        FROM programmer p
+        WHERE p.is_delete=0
+        LIMIT #{index},#{size}
+    </select>
+
+    <resultMap id="OrderByIncome" type="Programmer">
+        <id property="pid" column="pid"/>
+        <result property="income" column="income"/>
+        <result property="pname" column="pname"/>
+    </resultMap>
+
+    <select id="findProgrammesrOrderByIncome" resultMap="OrderByIncome">
+        SELECT p.pid,p.pname,p.income
+        FROM programmer p
+        WHERE p.is_delete=0
+        ORDER BY p.income DESC LIMIT 10
+    </select>
+
+    <select id="findTotalCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM programmer WHERE p.is_delete=0
+    </select>
+
+    <select id="findAllProgrammers1" resultMap="findSixProgrammer" >
+        SELECT p.pid,p.pimage,p.pname,p.adept,p.income,p.finish,p.moods,p.grade,p.location
+        FROM programmer p
+        WHERE p.is_delete=0 and  p.pid IN (SELECT c2.pid FROM collection2 c2 WHERE c2.is_delete=0 and c2.uid=#{uid})
+    </select>
+
+    <select id="findAllProgrammers2" resultMap="findSixProgrammer">
+        SELECT p.pid,p.pimage,p.pname,p.adept,p.income,p.finish,p.moods,p.grade,p.location
+        FROM programmer p
+        WHERE p.is_delete=0 and p.pid NOT IN (SELECT c2.pid FROM collection2 c2 WHERE c2.is_delete=0 and c2.uid=#{uid})
+    </select>
+
+    <select id="searchAllProgrammers1" resultMap="findSixProgrammer">
+        SELECT p.pid,p.pimage,p.pname,p.adept,p.income,p.finish,p.moods,p.grade,p.location
+        FROM programmer p
+        WHERE p.is_delete=0 and p.pid IN (SELECT c2.pid FROM collection2 c2 WHERE c2.is_delete=0 AND c2.uid=#{uid})
+        AND (p.pname LIKE concat(concat('%',#{keyword}),'%') OR p.adept LIKE concat(concat('%',#{keyword}),'%'))
+    </select>
+    <select id="searchAllProgrammers2" resultMap="findSixProgrammer">
+        SELECT p.pid,p.pimage,p.pname,p.adept,p.income,p.finish,p.moods,p.grade,p.location
+        FROM programmer p
+        WHERE p.is_delete=0 and p.pid NOT IN (SELECT c2.pid FROM collection2 c2 WHERE c2.is_delete=0 AND c2.uid=#{uid})
+        AND (p.pname LIKE concat(concat('%',#{keyword}),'%') OR p.adept LIKE concat(concat('%',#{keyword}),'%'))
+    </select>
+
+    <resultMap id="base_programmer" type="com.vip.items.domain.vo.ProgrammerVo">
+
+        <id column="pid" property="pid" />
+        <result column="pname" property="pname" />
+        <result column="pimage" property="pimage" />
+        <result column="adept" property="adept" />
+        <result column="finish" property="finish" />
+        <result column="moods" property="moods" />
+        <result column="income" property="income" />
+        <result column="grade" property="grade" />
+        <result column="location" property="location" />
+        <result column="introduce" property="introduce" />
+        <result column="cate_id" property="cateId" />
+        <result column="menu3_id" property="menu3Id" />
+        <result column="is_delete" property="isDelete" />
+        <association property="category" javaType="Category">
+            <id property="cateId" column="cate_id"/>
+            <result property="cateName" column="cate_name"/>
+        </association>
+        <association property="subMenu3" javaType="SubMenu3">
+            <id property="menu3Id" column="menu3_id"/>
+            <result property="menu3Name" column="menu3_name"/>
+        </association>
+        <association property="grades" javaType="Grades">
+            <id property="gradesId" column="grades_id"/>
+            <result property="grade1" column="grade1"/>
+            <result property="grade2" column="grade2"/>
+            <result property="grade3" column="grade3"/>
+            <result property="grade4" column="grade4"/>
+        </association>
+    </resultMap>
+    <sql id="Base_Column_List">
+            p.pid, pname, pimage, adept, finish, moods, income, grade, location, introduce,
+            is_delete,p.cate_id,cate_name,p.menu3_id,menu3_name,grades_id,grade1,grade2,grade3,grade4
+    </sql>
+    <select id="findBypid"  resultMap="base_programmer">
+        select
+        <include refid="Base_Column_List" />
+        from programmer p left join category c2 on p.cate_id = c2.cate_id
+        left join sub_menu3 sm3 on p.menu3_id = sm3.menu3_id
+        left join grades g on p.pid = g.pid
+        where p.pid = #{pid} and p.is_delete = 0
+    </select>
+
+</mapper>

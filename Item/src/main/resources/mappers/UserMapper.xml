@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vip.items.mapper.UserMapper">
+
+    <resultMap id="detailUser" type="User">
+        <id property="uid" column="uid"/>
+        <result property="username" column="username"/>
+        <result property="utel" column="utel"/>
+        <result property="email" column="email"/>
+    </resultMap>
+    <select id="findDetail" resultMap="detailUser">
+        SELECT u.username,u.uid,u.utel,u.email
+        FROM user u
+        WHERE u.uid = #{uid} AND u.is_delete = 0
+    </select>
+
+    <resultMap id="user_result" type="User">
+        <id property="uid" column="uid"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+    </resultMap>
+    <sql id="base_column_list">
+            uid,username,password
+    </sql>
+    <select id="findByUsername" resultMap="user_result">
+        select <include refid="base_column_list"></include>
+        from user u
+        where u.username=#{username}
+    </select>
+
+
+    <insert id="insertUser">
+        insert into user(username, password, email, utel)
+        values(#{username},#{password},#{email},#{utel})
+    </insert>
+    <resultMap id="BaseResultMap" type="com.vip.items.domain.entity.User">
+        <!--@mbg.generated-->
+        <id column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="utel" jdbcType="VARCHAR" property="utel" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    </resultMap>
+    <select id="userById" resultMap="BaseResultMap">
+        select u.username
+        from user u
+        where u.uid=#{uid} and u.is_delete=0
+    </select>
+
+    <update id="updatePassword">
+        update user set password=#{newPassword}
+        where username=#{username} and password=#{password}
+    </update>
+</mapper>

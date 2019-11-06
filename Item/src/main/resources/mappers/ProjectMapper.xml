@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vip.items.mapper.ProjectMapper">
+  <resultMap id="base_project" type="com.vip.items.domain.vo.ProjectVo">
+    <!--@mbg.generated-->
+    <id column="proid"  property="proid" />
+    <result column="pro_name" property="proName" />
+    <result column="create_time" property="createTime" />
+    <result column="pro_com" property="proCom" />
+    <result column="pro_request" property="proRequest" />
+    <result column="tel" property="tel" />
+    <result column="time" property="time" />
+    <result column="cate_id" property="cateId" />
+    <result column="menu2_id" property="menu2Id" />
+    <result column="menu3_id" property="menu3Id" />
+    <result column="is_delete" property="isDelete" />
+    <association property="category" javaType="Category">
+      <id property="cateId" column="cate_id"/>
+      <result property="cateName" column="cate_name"/>
+    </association>
+    <association property="subMenu2" javaType="SubMenu2">
+      <id property="menu2Id" column="menu2_id"/>
+      <result property="menu2Name" column="menu2_name"/>
+    </association>
+    <association property="subMenu3" javaType="SubMenu3">
+      <id property="menu3Id" column="menu3_id"/>
+      <result property="menu3Name" column="menu3_name"/>
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    p.proid, pro_name, create_time, pro_com, pro_request, tel, `time`, p.cate_id,cate_name,p.menu2_id,menu2_name,
+    p.menu3_id, menu3_name,p.is_delete
+  </sql>
+  <select id="findByproId" resultMap="base_project">
+    select
+    <include refid="Base_Column_List" />
+    from project p left join category c on p.cate_id = c.cate_id
+                   left join sub_menu2 sm2 on p.menu2_id = sm2.menu2_id
+                   left join sub_menu3 sm3 on p.menu3_id = sm3.menu3_id
+    where p.proid = #{proId} and p.is_delete = 0
+    </select>
+
+    <select id="findByKeyword" resultMap="base_project">
+        select p.proid,p.pro_name,p.create_time,p.pro_com,p.pro_request,p.tel,p.time,
+        c2.cate_id,c2.cate_name,
+        sm2.menu2_id,sm2.menu2_name,
+        sm3.menu3_id,sm3.menu3_name
+        from project p
+        left join category c2 on p.cate_id = c2.cate_id
+        left join sub_menu2 sm2 on p.menu2_id = sm2.menu2_id
+        left join sub_menu3 sm3 on p.menu3_id = sm3.menu3_id
+        where p.pro_name like concat(concat('%',#{keyword}),'%')
+        or p.pro_request like concat(concat('%',#{keyword}),'%')
+    </select>
+
+  <insert id="saveProject">
+    insert into project(pro_name,pro_com,pro_request,tel,time,cate_id,menu2_id,menu3_id)
+      values (#{param1},#{param2},#{param3},
+      #{param4},#{param5},#{param6},#{param7},#{param8})
+  </insert>
+
+    <resultMap id="BaseResultMap" type="com.vip.items.domain.vo.ProjectVo1">
+        <id column="proid"  property="proid" />
+        <result column="pro_name"  property="proName" />
+        <result column="create_time" property="createTime" />
+        <result column="pro_com" property="proCom" />
+        <result column="pro_request" property="proRequest" />
+        <result column="tel"  property="tel" />
+        <result column="time"  property="time" />
+        <result column="menu2_id"  property="menu2Id" />
+        <result column="menu3_id"  property="menu3Id" />
+        <result column="is_delete"  property="isDelete" />
+        <result property="cateId" column="cate_id"/>
+        <collection property="collection1List" resultMap="com.vip.items.mapper.Collection1Mapper.collMap">
+        </collection>
+    </resultMap>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select p.proid,p.pro_name,p.create_time,p.pro_com,p.tel,p.cate_id,p.menu2_id,p.menu3_id
+        from project p
+        where p.cate_id=#{cateId} and p.menu2_id=#{menu2Id} and p.menu3_id=#{menu3Id}
+    </select>
+
+    <select id="findDisplay" resultMap="BaseResultMap">
+        select *
+        from project
+    </select>
+    <select id="findCollect" resultMap="BaseResultMap">
+        select p.proid,pro_com,p.create_time,p.pro_name,p.pro_request,
+        c.cid,c.create_time,c.uid,c.is_delete,c.proid
+        from project p
+        right join collection1 c on p.proid = c.proid
+        where c.is_delete = #{isDelete}
+
+    </select>
+</mapper>

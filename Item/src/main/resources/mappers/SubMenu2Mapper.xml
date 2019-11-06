@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vip.items.mapper.SubMenu2Mapper">
+<resultMap id="subMenu2Map" type="SubMenu2">
+    <id property="menu2Id" column="menu2_id"/>
+    <result property="menu2Name" column="menu2_name"/>
+
+</resultMap>
+    <select id="findAll" resultMap="subMenu2Map">
+        select s.menu2_id,s.menu2_name
+        from sub_menu2 s
+    </select>
+</mapper>

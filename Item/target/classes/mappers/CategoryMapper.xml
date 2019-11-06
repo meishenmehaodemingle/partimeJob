@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vip.items.mapper.CategoryMapper">
+  <resultMap id="cateMap" type="com.vip.items.domain.vo.CategoryVo">
+    <id property="cateId" column="cate_id"/>
+    <result property="cateName" column="cate_name"/>
+    <collection property="projectList" resultMap="com.vip.items.mapper.ProjectMapper.BaseResultMap">
+    </collection>
+  </resultMap>
+
+    <resultMap id="cates" type="com.vip.items.domain.vo.CategoryVo">
+        <id property="cateId" column="cate_id"/>
+        <result property="cateName" column="cate_name"/>
+        <collection property="projectList" resultMap="com.vip.items.mapper.ProjectMapper.BaseResultMap"></collection>
+    </resultMap>
+  <select id="findAll" resultMap="cateMap">
+    select c.cate_id,c.cate_name
+    from category c
+  </select>
+  <select id="findProjevt" resultMap="cates">
+      select c.cate_id,c.cate_name, p.proid,p.pro_name,p.create_time,p.pro_com,p.tel,p.menu2_id,p.menu3_id
+      from category c
+      right join project p on c.cate_id = p.cate_id
+  </select>
+
+    <select id="findProject" resultMap="cates">
+        select c.cate_id,c.cate_name,
+        p.proid,p.pro_name,p.create_time,p.pro_com,p.tel,p.menu2_id,p.menu3_id,
+        c2.cid,c2.proid,c2.uid,c2.create_time,c2.is_delete
+      from category c
+      right join project p on c.cate_id = p.cate_id
+        left join collection1 c2 on p.proid = c2.proid
+      where c.cate_id=#{cateId} and p.menu2_id=#{menu2Id} and p.menu3_id=#{menu3Id}
+    </select>
+    <select id="findProjects" resultMap="cates">
+        select c.cate_id,c.cate_name,
+            p.proid,p.pro_name,p.create_time,p.pro_com,p.tel,p.menu2_id,p.menu3_id,
+            c2.cid,c2.proid,c2.uid,c2.create_time,c2.is_delete
+        from category c
+            right join project p on c.cate_id = p.cate_id
+            left join collection1 c2 on p.proid = c2.proid
+    </select>
+
+</mapper>

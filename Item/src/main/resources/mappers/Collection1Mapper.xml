@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vip.items.mapper.Collection1Mapper">
+  <resultMap id="collMap" type="Collection1">
+      <id property="cid" column="cid"/>
+      <result property="uid" column="uid"/>
+      <result property="proid" column="proid"/>
+      <result property="isDelete" column="is_delete"/>
+      <result property="createTime" column="create_time"/>
+  </resultMap>
+    <insert id="add">
+        insert into
+        collection1(proid,uid,is_delete)
+        values (#{proid},#{uid},#{isDelete})
+    </insert>
+
+    <update id="update">
+        update collection1 set
+        <if test=" isDelete != null and isDelete == 1">
+            is_delete = 0
+        </if>
+
+        <if test=" isDelete != null and isDelete == 0">
+            is_delete = 1
+        </if>
+        where cid =#{cid}
+    </update>
+
+    <select id="findById" resultMap="collMap">
+        select *
+        from collection1
+        where proid =#{proid}
+    </select>
+
+    <update id="updateByProid">
+        update collection1 set
+        <if test=" isDelete != null and isDelete == 1">
+            is_delete = 0
+        </if>
+
+        <if test=" isDelete != null and isDelete == 0">
+            is_delete = 1
+        </if>
+        where proid =#{proid}
+    </update>
+    <resultMap id="lin_collection1" type="Collection1">
+        <id column="cid" property="cid"/>
+        <result property="uid" column="uid"/>
+        <result property="proid" column="proid"/>
+        <result property="createTime" column="create_time"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+    <select id="findByUidProid" resultMap="lin_collection1">
+        select c1.cid,c1.uid,c1.proid,c1.create_time,c1.is_delete
+        from collection1 c1
+        where c1.uid=#{uid} and c1.proid=#{proid} and c1.is_delete=0
+    </select>
+
+
+    <insert id="addCollection1">
+        insert into collection1(uid, proid)
+        values(#{uid},#{proid})
+    </insert>
+
+
+    <update id="updateCollection1">
+        update collection1 set is_delete=1
+        where uid=#{uid} and proid=#{proid} and is_delete=0
+    </update>
+</mapper>
